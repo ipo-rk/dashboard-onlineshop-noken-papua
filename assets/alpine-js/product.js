@@ -19,7 +19,7 @@ function cartHandler() {
           allowEscapeKey: false
         }).then(() => {
           localStorage.setItem('isLoggedIn', 'true');
-          window.location.href = 'dashboard.html';
+          window.location.href = 'index.html'; // Ganti dashboard.html ke index.html
         });
       } else {
         Swal.fire({

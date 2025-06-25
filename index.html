@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard Admin</title>
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/img/favicon.png" rel="apple-touch-icon" />
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/alpine-js/product.js"></script>
+    <script src="assets/alpine-js/alpine.min.js" defer></script>
+
+    <!-- Style css file -->
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 CDN agar Swal.fire berfungsi -->
+    <script src="assets/js/sweetalert2.all.min.js"></script>
+    <!-- Bootstrap & Icons -->
+    <link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Google Fonts Modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Animate.css CDN for Animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        /* Smooth fade for modals */
+        .modal.fade.animate__animated {
+            animation-duration: .5s;
+        }
+
+        .modal.fade.animate__fadeIn {
+            animation-name: fadeIn;
+        }
+
+        .modal.fade.animate__fadeOut {
+            animation-name: fadeOut;
+        }
+
+        /* Table fade-in */
+        .table-animate {
+            animation: fadeInUp 0.7s cubic-bezier(.39, .575, .565, 1) both;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0)
+            }
+
+            100% {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        /* Chart card pop-in */
+        .chart-animate {
+            animation: popIn .7s cubic-bezier(.39, .575, .565, 1) both;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(.95) translateY(30px)
+            }
+
+            100% {
+                opacity: 1;
+                transform: none
+            }
+        }
+    </style>
+
+    <script>
+        // Cek login sebelum halaman dashboard muncul (letakkan di paling atas sebelum konten lain dieksekusi)
+        try {
+            if (localStorage.getItem('isUserLoggedIn') !== 'true') {
+                window.location.replace('loginAdmin.html');
+            }
+        } catch (e) {
+            window.location.replace('loginAdmin.html');
+        }
+        // Koneksi data dashboard <-> main site
+        // Sync produk, transaksi, dan user antar dashboard & main site
+        window.addEventListener('storage', function (e) {
+            if (['products', 'products2', 'products3', 'transactions', 'users', 'expenses'].includes(e.key)) {
+                // Reload data di dashboard jika ada perubahan dari tab lain (main site)
+                if (window.Alpine && Alpine.store && Alpine.store('cartHandler') && typeof Alpine.store('cartHandler').loadFromLocalStorage === 'function') {
+                    Alpine.store('cartHandler').loadFromLocalStorage();
+                } else if (typeof window.init === 'function') {
+                    window.init();
+                }
+            }
+        });
+        // Jika dashboard melakukan perubahan, trigger event storage manual agar main site ikut update
+        window.triggerDashboardSync = function (key) {
+            const value = localStorage.getItem(key);
+            localStorage.setItem(key, value); // trigger storage event
+        };
+    </script>
+</head>
+
+<body class="bg-dark-custom index-page" x-data="cartHandler()" x-init="init(); watchActivePage()"
+    :class="{ 'sidebar-open': sidebarOpen }">
+    <!-- Hamburger Toggle (mobile/tablet) -->
+    <button class="hamburger d-lg-none position-fixed top-0 start-0 mt-3 ms-2 shadow" @click="sidebarOpen = true">
+        <i class="bi bi-list"></i>
+    </button>
+    <!-- Sidebar Backdrop -->
+    <div class="sidebar-backdrop d-lg-none" x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity
+        style="z-index:1040;"></div>
+    <!-- Sidebar Modern Glass -->
+    <aside class="sidebar d-flex flex-column p-4 shadow-lg position-fixed glass-sidebar"
+        :class="[isDarkMode ? 'bg-dark-custom text-white' : 'bg-light text-dark', sidebarOpen ? 'show' : '', '']"
+        x-show="sidebarOpen || window.innerWidth > 991" x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="-translate-x-full opacity-0" x-transition:enter-end="translate-x-0 opacity-100"
+        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0 opacity-100"
+        x-transition:leave-end="-translate-x-full opacity-0"
+        style="min-height: 100vh; width: 260px; left: 0; top: 0; z-index:1050; backdrop-filter: blur(12px); background:rgba(31,41,55,0.7);">
+        <div class="text-end d-lg-none mb-2">
+            <button class="btn btn-sm btn-outline-light" @click="sidebarOpen = false"><i
+                    class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="text-center mb-3">
+            <img :src="editProfile.avatar" alt="Avatar" width="56" height="56"
+                class="mb-2 rounded-circle border border-primary">
+            <div class="fw-semibold text-white-50" x-text="'Hi, ' + (editProfile.name || 'Admin')"></div>
+            <span class="badge bg-primary ms-2" x-text="editProfile.role"></span>
+        </div>
+        <nav class="nav flex-column gap-1">
+            <a href="#" class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded mb-1"
+                :class="[isDarkMode ? 'text-white sidebar-link-dark' : 'text-dark sidebar-link-light', { 'active': activePage === 'dashboard' }]"
+                @click.prevent="activePage = 'dashboard'; if(window.innerWidth <= 991) sidebarOpen = false">
+                <i class="bi bi-house-door-fill fs-4"></i> <span class="fw-semibold">Dashboard</span>
+            </a>
+            <a href="#" class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded mb-1"
+                :class="[isDarkMode ? 'text-white sidebar-link-dark' : 'text-dark sidebar-link-light', { 'active': activePage === 'transaksi' }]"
+                @click.prevent="activePage = 'transaksi'; if(window.innerWidth <= 991) sidebarOpen = false">
+                <i class="bi bi-cart-fill fs-4"></i> <span class="fw-semibold">Transaksi</span>
+            </a>
+            <a href="#" class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded mb-1"
+                :class="[isDarkMode ? 'text-white sidebar-link-dark' : 'text-dark sidebar-link-light', { 'active': activePage === 'pengguna' }]"
+                @click.prevent="activePage = 'pengguna'; if(window.innerWidth <= 991) sidebarOpen = false">
+                <i class="bi bi-people-fill fs-4"></i> <span class="fw-semibold">Pengguna</span>
+            </a>
+            <a href="#" class="nav-link sidebar-link d-flex align-items-center gap-3 px-3 py-2 rounded mb-1"
+                :class="[isDarkMode ? 'text-white sidebar-link-dark' : 'text-dark sidebar-link-light', { 'active': activePage === 'laporan' }]"
+                @click.prevent="activePage = 'laporan'; if(window.innerWidth <= 991) sidebarOpen = false">
+                <i class="bi bi-bar-chart-line-fill fs-4"></i> <span class="fw-semibold">Laporan</span>
+            </a>
+        </nav>
+        <hr class="border-light opacity-25 mt-3 mb-2" />
+        <div class="mt-auto">
+            <button class="btn btn-outline-light btn-sm w-100 rounded-pill mb-2" @click="toggleDarkMode()">
+                <i :class="isDarkMode ? 'bi bi-moon-stars-fill' : 'bi bi-brightness-high-fill'"></i>
+                <span x-text="isDarkMode ? 'Dark Mode' : 'Light Mode'"></span>
+            </button>
+            <button class="btn btn-outline-light btn-sm w-100 rounded-pill" @click="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Modern -->
+    <div class="container-fluid p-4 main-modern"
+        :style="window.innerWidth <= 991 ? 'margin-left:0;width:100%' : 'margin-left:260px;width:calc(100% - 260px)'"
+        :class="isDarkMode ? 'bg-dark-custom text-white' : 'bg-light text-dark'">
+        <!-- Card Statistik Modern -->
+        <div class="row g-4 mb-4 animate__animated animate__fadeIn animate__faster">
+            <div class="col-6 col-md-3">
+                <div
+                    class="card card-stat shadow border-0 gradient-blue text-white text-center p-3 animate__animated animate__fadeInUp">
+                    <div class="fs-1 mb-2"><i class="bi bi-box-seam"></i></div>
+                    <div class="fs-3 fw-bold" x-text="allProducts.length"></div>
+                    <div class="small">Total Produk</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div
+                    class="card card-stat shadow border-0 gradient-green text-white text-center p-3 animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="fs-1 mb-2"><i class="bi bi-cart-check"></i></div>
+                    <div class="fs-3 fw-bold" x-text="transactions.length"></div>
+                    <div class="small">Total Transaksi</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div
+                    class="card card-stat shadow border-0 gradient-purple text-white text-center p-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="fs-1 mb-2"><i class="bi bi-people"></i></div>
+                    <div class="fs-3 fw-bold" x-text="users.length"></div>
+                    <div class="small">Total Pengguna</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div
+                    class="card card-stat shadow border-0 gradient-orange text-white text-center p-3 animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="fs-1 mb-2"><i class="bi bi-cash-coin"></i></div>
+                    <div class="fs-3 fw-bold"
+                        x-text="transactions.reduce((total, trx) => total + trx.totalPrice, 0).toLocaleString()"></div>
+                    <div class="small">Total Pendapatan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Card & Dashboard Cards -->
+        <div class="profile-card mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+            <img :src="editProfile.avatar" alt="Admin">
+            <div class="profile-info">
+                <div class="fw-bold fs-5" x-text="editProfile.name"></div>
+                <div class="text-secondary" x-text="editProfile.email"></div>
+                <div class="badge bg-primary mt-2" x-text="editProfile.role"></div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-info btn-sm" @click="openEditProfile()"><i class="bi bi-pencil"></i> Edit
+                    Profile
+                </button>
+                <button class="btn btn-warning btn-sm ms-2" @click="showSetAdminModal = true"><i class="bi bi-gear"></i>
+                    Set Admin Email/Password</button>
+
+            </div>
+        </div>
+        <!-- Modal Edit Profile -->
+        <div class="modal fade animate__animated"
+            :class="showEditProfile ? 'show d-block animate__fadeIn' : 'animate__fadeOut'" tabindex="-1"
+            style="background:rgba(0,0,0,0.4);" x-show="showEditProfile">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" :class="isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title">Edit Profil Admin</h5>
+                        <button type="button" class="btn-close btn-close-white" @click="showEditProfile = false">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveProfile()">
+                            <div class="mb-3 text-center">
+                                <img :src="editProfile.avatar" alt="Avatar" class="rounded-circle mb-2"
+                                    style="width:80px;height:80px;object-fit:cover;">
+                                <input type="file" class="form-control mt-2" accept="image/*"
+                                    @change="handleAvatarFileChange($event)">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nama</label>
+                                <input type="text" class="form-control" x-model="editProfile.name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" x-model="editProfile.email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Role</label>
+                                <select class="form-select" x-model="editProfile.role">
+                                    <option value="ADMIN">Admin</option>
+                                    <option value="SUPERADMIN">Superadmin</option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" @click="showEditProfile = false">Batal
+                                </button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Set Admin Email/Password -->
+        <div class="modal fade animate__animated"
+            :class="showSetAdminModal ? 'show d-block animate__fadeIn' : 'animate__fadeOut'" tabindex="-1"
+            style="background:rgba(0,0,0,0.4);" x-show="showSetAdminModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" :class="isDarkMode ? 'bg-dark text-white' : 'bg-light text-dark'">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title">Set Admin Email & Password</h5>
+                        <button type="button" class="btn-close btn-close-white"
+                            @click="showSetAdminModal = false"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form
+                            @submit.prevent="setAdminCredentials(setAdminEmail, setAdminPassword); showSetAdminModal = false; Swal.fire('Berhasil', 'Email & password admin berhasil diubah!', 'success');">
+                            <div class="mb-3">
+                                <label class="form-label">Email Admin</label>
+                                <input type="email" class="form-control" x-model="setAdminEmail" required
+                                    autocomplete="username">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password Admin</label>
+                                <div class="input-group">
+                                    <input :type="setAdminPasswordVisible ? 'text' : 'password'" class="form-control"
+                                        x-model="setAdminPassword" required autocomplete="current-password">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        @click="setAdminPasswordVisible = !setAdminPasswordVisible" tabindex="-1">
+                                        <i :class="setAdminPasswordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary"
+                                    @click="showSetAdminModal = false">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div x-show="activePage === 'dashboard'">
+            <h4 class="mb-4 animate__animated animate__fadeInDown">Dashboard Admin - Kelola Produk</h4>
+            <form @submit.prevent="editIndex === null ? createProduct() : updateProduct()"
+                class="row g-3 mb-4 animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="col-12 col-md-3">
+                    <input x-model="newProduct.name" class="form-control" placeholder="Nama Produk" required />
+                </div>
+                <div class="col-6 col-md-2">
+                    <input x-model.number="newProduct.price" type="number" class="form-control" placeholder="Harga"
+                        required />
+                </div>
+                <div class="col-6 col-md-2">
+                    <input x-model="newProduct.diskon" class="form-control" placeholder="Diskon (Rp)" />
+                </div>
+                <div class="col-12 col-md-3">
+                    <input type="file" class="form-control" accept="image/*" @change="handleFileChange($event)"
+                        :required="editIndex === null" x-ref="fileInput" />
+                </div>
+                <div class="col-12 col-md-2">
+                    <input x-model="newProduct.descriptions" class="form-control" placeholder="Deskripsi" required />
+                </div>
+                <div class="col-12 col-md-2">
+                    <select x-model="newProduct.category" class="form-select" required>
+                        <option disabled value="">Kategori</option>
+                        <option value="filter-staters">Rajutan Kulit Kayu</option>
+                        <option value="filter-salads">Rajutan Benang</option>
+                        <option value="filter-specialty">Aksesoris</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4">
+                    <button type="submit" class="btn btn-primary w-100"
+                        x-text="editIndex !== null ? 'Update Produk' : 'Tambah Produk'">
+                        <!-- Tombol akan otomatis berubah labelnya -->
+                    </button>
+                </div>
+                <div class="col-12 col-md-4" x-show="editIndex !== null">
+                    <button type="button" class="btn btn-secondary w-100" @click="resetProductForm()">Batal
+                        Edit</button>
+                </div>
+            </form>
+            <div class="table-responsive animate__animated animate__fadeInUp animate__delay-2s">
+                <table class="table table-bordered table-dark align-middle text-center table-animate">
+                    <thead>
+                        <tr>
+                            <th>Gambar</th>
+                            <th>Nama</th>
+                            <th>Harga Barang</th>
+                            <th>Diskon Barang</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(product, idx) in allProducts" :key="product.id || idx">
+                            <tr>
+                                <td>
+                                    <img :src="product.image || 'assets/images/default-image.jpg'" alt="Gambar Produk"
+                                        style="width: 60px;" class="img-thumbnail" />
+                                </td>
+                                <td x-text="product.name"></td>
+                                <td>Rp <span x-text="Number(product.price).toLocaleString('id-ID')"></span>
+                                </td>
+                                <td>Rp <span x-text="Number(product.diskon).toLocaleString('id-ID')"></span></td>
+                                <td x-text="product.descriptions"></td>
+                                <td>
+                                    <button @click="startEditProduct(product.realIndex, product.sourceArray)"
+                                        class="btn btn-warning btn-sm my-3 w-100 mb-1" aria-label="Edit Produk">
+                                        Edit
+                                    </button>
+                                    <button @click="deleteProduct(product.realIndex, product.sourceArray)"
+                                        class="btn btn-danger btn-sm my-3 w-100" aria-label="Hapus Produk">
+                                        Hapus
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                        <tr x-show="allProducts.length === 0">
+                            <td colspan="6" class="text-center">Belum ada produk.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Transaksi -->
+        <div x-show="activePage === 'transaksi'" class="p-2 p-md-4 animate__animated animate__fadeIn animate__delay-1s">
+            <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+                <h4 class="mb-0">Daftar Transaksi</h4>
+                <div class="flex-grow-1 mx-md-3 my-2 my-md-0" style="max-width:400px;">
+                    <input type="text" class="form-control" placeholder="Cari nama, email, atau tanggal..."
+                        x-model="filterTransaksi.keyword" @input="filterTransaksiChanged()">
+                </div>
+                <button class="btn btn-danger btn-sm w-50 w-md-auto" @click="confirmDeleteAllTransactions()">
+                    <i class="bi bi-trash3-fill me-1"></i> Hapus Semua
+                </button>
+            </div>
+            <div class="table-responsive animate__animated animate__fadeInUp animate__delay-2s">
+                <table class="table table-striped table-bordered align-middle table-animate">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>No HP</th>
+                            <th>Total</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(trx, index) in filteredTransactions()" :key="trx.id">
+                            <tr>
+                                <td x-text="index + 1"></td>
+                                <td x-text="trx.customer.name"></td>
+                                <td x-text="trx.customer.email || '-'" style="word-break:break-all"></td>
+                                <td x-text="trx.customer.phone || '-'" style="word-break:break-all"></td>
+                                <td x-text="'Rp ' + Number(trx.totalPrice).toLocaleString('id-ID')"></td>
+                                <td x-text="trx.date"></td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm mb-2 w-100"
+                                        @click="deleteTransaction(trx.id)"><i class="bi bi-x-circle"></i> Hapus</button>
+                                    <button class="btn btn-success btn-sm ms-0 ms-md-1 w-100"
+                                        @click="printReceipt(trx)"><i class="bi bi-printer"></i> Cetak Resi</button>
+                                </td>
+                            </tr>
+                        </template>
+                        <tr x-show="filteredTransactions().length === 0">
+                            <td colspan="7" class="text-center">Belum ada transaksi.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pengguna -->
+        <div x-show="activePage === 'pengguna'" class="animate__animated animate__fadeIn animate__delay-1s">
+            <h4 class="mb-3 animate__animated animate__fadeInDown">Daftar Pengguna <span class="badge bg-info ms-2"
+                    x-text="users.length"></span></h4>
+            <div class="table-responsive animate__animated animate__fadeInUp animate__delay-2s">
+                <table class="table table-dark table-bordered align-middle text-center table-animate">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Email</th>
+                            <th>Tanggal Register</th>
+                            <th>Role</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(user, idx) in users" :key="user.email">
+                            <tr>
+                                <td x-text="idx + 1"></td>
+                                <td x-text="user.email" style="word-break:break-all"></td>
+                                <td x-text="(new Date(user.registeredAt)).toLocaleString('id-ID')"></td>
+                                <td>
+                                    <span class="badge bg-success" x-show="user.role === 'admin'">Admin</span>
+                                    <span class="badge bg-secondary"
+                                        x-show="!user.role || user.role === 'user'">User</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm w-100" @click="deleteUser(user.email)"><i
+                                            class="bi bi-trash"></i> Hapus</button>
+                                </td>
+                            </tr>
+                        </template>
+                        <tr x-show="users.length === 0">
+                            <td colspan="5" class="text-center">Belum ada pengguna terdaftar.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Grafik Penjualan & Analitik -->
+        <div x-show="activePage === 'laporan'">
+            <div class="row mb-4">
+                <div class="col-lg-6 mb-4">
+                    <div class="card p-3 chart-animate animate__animated animate__fadeInUp">
+                        <div class="fw-bold mb-2"><i class="bi bi-graph-up"></i> Tren Penjualan (Bar/Line)</div>
+                        <div style="height:320px;width:100%"><canvas id="salesTrendChart"
+                                style="max-height:300px;width:100%"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="card p-3 chart-animate animate__animated animate__fadeInUp animate__delay-1s">
+                        <div class="fw-bold mb-2"><i class="bi bi-pie-chart"></i> Distribusi Penjualan per Kategori
+                            (Pie/Doughnut)</div>
+                        <div style="height:320px;width:100%"><canvas id="categoryPieChart"
+                                style="max-height:300px;width:100%"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-lg-12 mb-4">
+                    <div class="card p-3 chart-animate animate__animated animate__fadeInUp animate__delay-2s">
+                        <div class="fw-bold mb-2"><i class="bi bi-bar-chart-steps"></i> Performa Kategori (Radar)
+                        </div>
+                        <div style="height:320px;width:100%"><canvas id="categoryRadarChart"
+                                style="max-height:300px;width:100%"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Fanruan Cash Management Section -->
+            <div x-show="activePage === 'laporan'" class="mb-4">
+                <div class="card p-3 mb-4 chart-animate animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="fw-bold"><i class="bi bi-cash-stack"></i> Fanruan Cash Management (Arus Kas)
+                        </div>
+                        <button class="btn btn-info btn-sm" @click="showAddExpense = true"><i
+                                class="bi bi-plus-circle"></i>
+                            Tambah Pengeluaran</button>
+                    </div>
+                    <div style="height:320px;width:100%"><canvas id="cashflowChart"
+                            style="max-height:300px;width:100%"></canvas></div>
+                </div>
+                <!-- Modal Tambah Pengeluaran -->
+                <div class="modal fade animate__animated"
+                    :class="showAddExpense ? 'show d-block animate__fadeIn' : 'animate__fadeOut'" tabindex="-1"
+                    style="background:rgba(0,0,0,0.4);" x-show="showAddExpense">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Tambah Pengeluaran</h5>
+                                <button type="button" class="btn-close" @click="showAddExpense = false"></button>
+                            </div>
+                            <form @submit.prevent="addExpense()">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tanggal</label>
+                                        <input type="date" class="form-control" x-model="expenseDate" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Keterangan</label>
+                                        <input type="text" class="form-control" x-model="expenseDesc" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Jumlah (Rp)</label>
+                                        <input type="number" class="form-control" x-model.number="expenseAmount" min="1"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        @click="showAddExpense = false">Batal
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Fanruan Cash Management Section -->
+            <!-- Grafik DSO (Days Sales Outstanding) -->
+            <div x-show="activePage === 'laporan'" class="mb-4">
+                <div class="card p-3 mb-4 chart-animate animate__animated animate__fadeInUp animate__delay-4s">
+                    <div class="fw-bold mb-2"><i class="bi bi-clock-history"></i> Days Sales Outstanding (DSO)</div>
+                    <div style="height:320px;width:100%"><canvas id="dsoChart"
+                            style="max-height:300px;width:100%"></canvas>
+                    </div>
+                    <div class="small text-muted mt-2">DSO = Rata-rata hari dari tanggal transaksi hingga hari ini
+                        (semakin kecil semakin baik)</div>
+                </div>
+            </div>
+        </div>
+        <!-- End Grafik Penjualan & Analitik -->
+    </div>
+
+    <!-- AlpineJS Logic Terpusat -->
+    <!-- <script src="assets/alpine-js/alpine.min.js"></script> -->
+    <!-- AlpineJS logic sudah dipindah ke assets/js/product.js -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('cartHandler', window.cartHandler);
+        });
+        // Script agar darkmode/lightmode berjalan
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('theme', {
+                isDark: localStorage.getItem('dashboardDarkMode') === 'true',
+                toggle() {
+                    this.isDark = !this.isDark;
+                    localStorage.setItem('dashboardDarkMode', this.isDark);
+                    document.body.classList.toggle('bg-dark-custom', this.isDark);
+                    document.body.classList.toggle('bg-light', !this.isDark);
+                    document.body.classList.toggle('text-dark', !this.isDark);
+                }
+            });
+        });
+        // Optimasi: renderAllCharts hanya saat tab laporan aktif
+        document.addEventListener('alpine:init', () => {
+            Alpine.effect(() => {
+                if (Alpine && Alpine.$data && Alpine.$data.activePage === 'laporan') {
+                    if (window.Alpine && Alpine.nextTick && window.cartHandler) {
+                        Alpine.nextTick(() => {
+                            if (typeof Alpine.$data.renderAllCharts === 'function') {
+                                Alpine.$data.renderAllCharts();
+                            } else if (typeof window.cartHandler().renderAllCharts === 'function') {
+                                window.cartHandler().renderAllCharts();
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>

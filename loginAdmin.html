@@ -109,7 +109,7 @@
                 localStorage.setItem('isUserLoggedIn', 'true');
                 localStorage.setItem('userEmail', email);
                 Swal.fire({ icon: 'success', title: 'Login Berhasil', text: 'Selamat datang Admin!' }).then(() => {
-                    window.location.replace('dashboard.html');
+                    window.location.replace('index.html'); // Ganti dashboard.html ke index.html
                 });
             } else {
                 Swal.fire({ icon: 'error', title: 'Login Gagal', text: 'Email atau password salah!' });
