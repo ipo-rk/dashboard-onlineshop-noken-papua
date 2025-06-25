@@ -226,11 +226,45 @@ body {
         .card.card-stat {
             border-radius: 1.2rem;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-            transition: transform 0.3s cubic-bezier(.4,2,.3,1), box-shadow 0.3s;
+            transition: transform 0.25s cubic-bezier(.39,.575,.565,1), box-shadow 0.25s cubic-bezier(.39,.575,.565,1), filter 0.25s, background 0.25s;
+            will-change: transform, box-shadow, filter;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .card.card-stat::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s cubic-bezier(.39,.575,.565,1), height 0.4s cubic-bezier(.39,.575,.565,1), opacity 0.4s;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
         }
         .card.card-stat:hover {
-            transform: translateY(-6px) scale(1.04);
-            box-shadow: 0 12px 36px rgba(0,0,0,0.18);
+            transform: scale(1.08) translateY(-8px) rotateZ(-1deg);
+            box-shadow: 0 16px 48px 0 rgba(31, 41, 55, 0.22), 0 2px 12px 0 rgba(0,0,0,0.13);
+            filter: brightness(1.08) saturate(1.15);
+        }
+        .card.card-stat:hover::after {
+            width: 180%;
+            height: 180%;
+            opacity: 1;
+        }
+        .card.card-stat:hover .fs-1 {
+            animation: bounceIcon 0.5s;
+        }
+        @keyframes bounceIcon {
+            0% { transform: scale(1) translateY(0); }
+            30% { transform: scale(1.18) translateY(-8px); }
+            60% { transform: scale(0.95) translateY(2px); }
+            100% { transform: scale(1) translateY(0); }
         }
 
         /* Responsive fix for card text */
