@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Register User</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/img/favicon.png" rel="apple-touch-icon" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Satisfy:wght@400&display=swap"
+        rel="stylesheet" />
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet" />
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet" />
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet" />
+
+    <!-- Tailwind Css -->
+
+
+    <!-- Alpine JS -->
+    <script src="assets/alpine-js/alpine.min.js" defer></script>
+    <script src="assets/alpine-js/product.js"></script>
+    <!-- sweet alert -->
+    <script src="assets/js/sweetalert2.all.min.js"></script>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Facebook SDK -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+</head>
+
+<body class="index-page" x-data="{...cartHandler(), sidebarOpen: false, activePage: 'dashboard'}"
+    x-init="sidebarOpen = false; init();">
+
+    <header id="header" class="header fixed-top">
+
+
+    </header>
+
+    <main class="main">
+        <!-- About Section -->
+        <section id="about" class="about section light-background my-1 py-5">
+            <div class="container section-title pb-3" data-aos="fade-up">
+                <h2>Register Admin</h2>
+
+            </div>
+            <div class="container d-flex align-items-center justify-content-center ">
+                <div class="card shadow p-4 mx-auto" style="width:100%;max-width:400px;">
+
+                    <form id="registerForm" autocomplete="off">
+                        <div class="mb-2">
+                            <label for="name" class="form-label">Nama Lengkap</label>
+                            <input type="text" id="name" class="form-control" required autocomplete="off">
+                        </div>
+                        <div class="mb-2">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" class="form-control" required autocomplete="off">
+                        </div>
+                        <div class="mb-2">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="password" class="form-control" required
+                                    autocomplete="new-password">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="passwordConfirm" class="form-label">Konfirmasi Password</label>
+                            <div class="input-group">
+                                <input type="password" id="passwordConfirm" class="form-control" required
+                                    autocomplete="new-password">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                        <div class="text-center mt-3">
+                            <span>Sudah punya akun?</span>
+                            <a href="loginAdmin.html" class="text-primary fw-semibold">Kembali ke Login</a>
+                        </div>
+                    </form>
+                    <!-- Google & Facebook Login Buttons (UI Only) -->
+                    <div class="mb-3 text-center mt-3 d-flex flex-column align-items-center gap-2">
+                        <button type="button"
+                            class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2 w-100"
+                            style="max-width:320px;">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
+                                alt="Google" style="width:24px;height:24px;">
+                            <span class="flex-grow-1 text-center">Daftar dengan Google</span>
+                        </button>
+                        <button type="button"
+                            class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 w-100"
+                            style="max-width:320px;">
+                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/facebook/facebook-original.svg"
+                                alt="Facebook" style="width:24px;height:24px;">
+                            <span class="flex-grow-1 text-center">Daftar dengan Facebook</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            </div>
+        </section>
+        <!-- /About Section -->
+    </main>
+
+
+
+
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <img src="assets/img/favicon.png" alt="Noken Papua" id="preloader-img">
+    </div>
+
+
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('cartHandler', cartHandler);
+        });
+        // Handler register admin
+        function userRegister() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
+            if (!name || !email || !password || !passwordConfirm) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Semua field wajib diisi!' });
+                return;
+            }
+            if (password !== passwordConfirm) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Konfirmasi password tidak cocok!' });
+                return;
+            }
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(u => u.email === email)) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Email sudah terdaftar!' });
+                return;
+            }
+            users.push({
+                name: name,
+                email: email,
+                password: password,
+                registeredAt: new Date().toISOString(),
+                role: 'admin'
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Registrasi admin berhasil!' }).then(() => {
+                window.location.href = 'loginAdmin.html';
+            });
+        }
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+        document.getElementById('togglePasswordConfirm').addEventListener('click', function () {
+            const passwordInput = document.getElementById('passwordConfirm');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
+            if (!name || !email || !password || !passwordConfirm) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Semua field wajib diisi!' });
+                return;
+            }
+            if (password !== passwordConfirm) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Konfirmasi password tidak cocok!' });
+                return;
+            }
+            // Simpan ke localStorage sebagai admin utama
+            localStorage.setItem('adminEmail', email);
+            localStorage.setItem('adminPassword', password);
+            // Juga simpan ke users array (opsional, untuk list user)
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(u => u.email === email)) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Email sudah terdaftar!' });
+                return;
+            }
+            users.push({
+                name: name,
+                email: email,
+                password: password,
+                registeredAt: new Date().toISOString(),
+                role: 'admin'
+            });
+            localStorage.setItem('users', JSON.stringify(users));
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Registrasi admin berhasil!' }).then(() => {
+                window.location.href = 'loginAdmin.html';
+            });
+        });
+    </script>
+
+</body>
+
+</html>

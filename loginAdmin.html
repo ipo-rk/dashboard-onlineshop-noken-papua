@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Login Admin</title>
+    <link href="assets/css/main.css" rel="stylesheet" />
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="assets/css/main.css" rel="stylesheet" />
+    <script src="assets/alpine-js/product.js"></script>
+    <script src="assets/alpine-js/alpine.min.js" defer></script>
+    <script src="assets/js/sweetalert2.all.min.js"></script>
+</head>
+
+<body class="index-page">
+    <main class="main">
+        <!-- About Section -->
+        <section id="about" class="about section light-background ">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Form Login</h2>
+            </div>
+            <div class="container d-flex align-items-center justify-content-center ">
+                <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+                    <form id="loginForm" autocomplete="on">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required
+                                autocomplete="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="password" name="password" class="form-control" required
+                                    autocomplete="current-password">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <div class="text-center mt-3">
+                            <span>Belum punya akun?</span>
+                            <a href="registerAdmin.html" class="text-primary fw-semibold">Create a new account</a>
+                        </div>
+                        <div class="text-center mt-3">
+                            <span>Atau login dengan</span>
+                        </div>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <button type="button" class="btn btn-outline-danger"
+                                style="display: flex; align-items: center; gap: 6px;">
+                                <svg width="20" height="20" viewBox="0 0 48 48">
+                                    <g>
+                                        <path fill="#4285F4"
+                                            d="M44.5 20H24v8.5h11.7C34.7 33.1 29.8 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c2.7 0 5.2.9 7.2 2.5l6.4-6.4C34.2 5.1 29.4 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21c10.5 0 20-7.5 20-21 0-1.3-.1-2.7-.3-4z" />
+                                        <path fill="#34A853"
+                                            d="M6.3 14.7l7 5.1C15.5 16.1 19.4 13 24 13c2.7 0 5.2.9 7.2 2.5l6.4-6.4C34.2 5.1 29.4 3 24 3 15.1 3 7.6 8.7 6.3 14.7z" />
+                                        <path fill="#FBBC05"
+                                            d="M24 45c5.4 0 10.2-1.8 14-4.9l-6.5-5.3C29.8 36 24 36 24 36c-5.8 0-10.7-2.9-13.7-7.2l-7 5.4C7.6 39.3 15.1 45 24 45z" />
+                                        <path fill="#EA4335"
+                                            d="M44.5 20H24v8.5h11.7c-1.6 4.1-6.1 7.5-11.7 7.5-6.6 0-12-5.4-12-12s5.4-12 12-12c2.7 0 5.2.9 7.2 2.5l6.4-6.4C34.2 5.1 29.4 3 24 3c-10.6 0-19.3 8.7-19.3 19.3S13.4 41.7 24 41.7c10.5 0 20-7.5 20-21 0-1.3-.1-2.7-.3-4z" />
+                                    </g>
+                                </svg>
+                                Google
+                            </button>
+                            <button type="button" class="btn btn-outline-primary"
+                                style="display: flex; align-items: center; gap: 6px;">
+                                <svg width="20" height="20" viewBox="0 0 48 48">
+                                    <g>
+                                        <path fill="#1877F2"
+                                            d="M24 4C12.95 4 4 12.95 4 24c0 9.95 7.16 18.17 16.5 19.74V30.89h-4.97v-6.89h4.97v-5.25c0-4.92 2.93-7.64 7.42-7.64 2.15 0 4.4.38 4.4.38v4.83h-2.48c-2.44 0-3.2 1.52-3.2 3.08v3.6h5.44l-.87 6.89h-4.57v12.85C36.84 42.17 44 33.95 44 24c0-11.05-8.95-20-20-20z" />
+                                        <path fill="#fff"
+                                            d="M32.07 30.89l.87-6.89h-5.44v-3.6c0-1.56.76-3.08 3.2-3.08h2.48v-4.83s-2.25-.38-4.4-.38c-4.49 0-7.42 2.72-7.42 7.64v5.25h-4.97v6.89h4.97v12.85c1.62.25 3.28.39 5 .39s3.38-.14 5-.39V30.89h4.57z" />
+                                    </g>
+                                </svg>
+                                Facebook
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <!-- /About Section -->
+    </main>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            // Ambil admin dari localStorage (bisa di-set lewat dashboard)
+            const adminEmail = localStorage.getItem('adminEmail') || 'rizaldoricky@gmail.com';
+            const adminPassword = localStorage.getItem('adminPassword') || 'jayapura11';
+            if (email === adminEmail && password === adminPassword) {
+                localStorage.setItem('isUserLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                Swal.fire({ icon: 'success', title: 'Login Berhasil', text: 'Selamat datang Admin!' }).then(() => {
+                    window.location.replace('dashboard.html');
+                });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Login Gagal', text: 'Email atau password salah!' });
+            }
+        });
+    </script>
+</body>
+
+</html>
